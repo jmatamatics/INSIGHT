@@ -20,7 +20,7 @@ client = OpenAI()
 
 
 st.image('med3.png',use_column_width= True)
-st.title('Insight')
+st.title('INSIGHT')
 st.subheader('AI Wellness Coach for Philosophical and Practical Guidance')
 
 
