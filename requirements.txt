@@ -1,0 +1,7 @@
+langchain
+langchain_openai
+openai
+python-dotenv
+streamlit
+streamlit_mic_recorder
+watchdog
