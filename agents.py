@@ -10,15 +10,17 @@ from langchain.agents.output_parsers import OpenAIFunctionsAgentOutputParser
 from langchain.prompts import (
     ChatPromptTemplate,
     HumanMessagePromptTemplate,
-    MessagesPlaceholder, #to add sratchpasd to message
+    MessagesPlaceholder, #to add sratchpad to message
 )
+from langchain.tools.retriever import create_retriever_tool
+from langchain_community.vectorstores import FAISS
 from dotenv import load_dotenv
 from streamlit_mic_recorder import mic_recorder
 import os
 import time
 import re
 from openai import OpenAI
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 import streamlit as st
@@ -65,15 +67,13 @@ def med_script(human_input):
     ('human', human_input)
 
     ])
-    llm = ChatOpenAI(model='gpt-4', streaming =True) #play with temperature
+    llm = ChatOpenAI(model='gpt-4o-2024-05-13', streaming =True) #play with temperature
 
     chat_llm_chain = LLMChain(
         llm=llm,
         prompt=chatprompt,
-       # verbose=True,
        )
     response = chat_llm_chain.predict(human_input=human_input)
-    #print(response)
     if len(response) < 200:
         return f'return only the generated script: {response}'
     else:
@@ -83,7 +83,6 @@ def med_script(human_input):
         input=response,
         )
         audio.write_to_file("script.mp3")
-        #return f'audio file is ready {response}'
         audio_file = 'script.mp3'
         st.audio(audio_file, format='audio/mp3', start_time=0)
         return f'return only the generated script: {response}'
@@ -102,7 +101,7 @@ def audio(ai_input):
     """Creates an audio file for anything the user suggests.
     input (str): The content to be converted an audio file.
     """
-    with st.spinner("Creaating the audio..."):
+    with st.spinner("Creating the audio..."):
 
         response = client.audio.speech.create(
             model="tts-1",
@@ -110,11 +109,42 @@ def audio(ai_input):
             input=ai_input,
             )
         response.write_to_file("script.mp3")
-    #st.write(ai_input)
-    #return f'audio file is ready {response}'
     audio_file = 'script.mp3'
     st.audio(audio_file, format='audio/mp3', start_time=0)
     return f'the audio file is complete. Do not return a link to the audio file' 
+
+
+
+
+
+
+
+
+response = client.chat.completions.create(
+  model="gpt-4o",
+  messages=[
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user",
+         "content":[
+         {"tyoe": "text", "text" :"decribe the emotion of the person in the picturd"},
+         {"tyoe": "imag_url", "image_url": "url":   }
+         ]
+    }
+  ],
+  max_token=300
+)
+
+
+
+
+
+
+
+
+kbase = FAISS.load_local("faiss_index", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+kbase_ret = kbase.as_retriever()
+kbase_tool=create_retriever_tool(kbase_ret,"knowledge",
+                      "you must use this tool!")
 
 
 
@@ -123,7 +153,7 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 ai_prompt = ChatPromptTemplate.from_messages([
     ("system",
      '''
-    INSIGHT is an AI wellness coach providing deep and meaningful guidance on personal growth, wellness, and self-reflection. Drawing inspiration from a wide range of philosophical and psychological sources, INSIGHT offers insightful, contemplative, and practical advice. For each query, it responds in three sections: Wisdom, The Practice, and Hidden Geometries.
+    INSIGHT is an AI wellness coach providing deep and meaningful guidance on personal growth, wellness, and self-reflection. Drawing inspiration from a wide range of philosophical and psychological sources, INSIGHT offers insightful, contemplative, and practical advice. For each query, use the knowledge tool. Respond in three sections: Wisdom, The Practice, and Hidden Geometries.
 
     Wisdom: INSIGHT offers philosophical responses to queries, presenting thought-provoking and motivational insights in a contemplative style.
 
@@ -143,20 +173,17 @@ ai_prompt = ChatPromptTemplate.from_messages([
 
 
 
-
-
 def ai_agent(human_input):
     #tools = [create_image,audio, med_script, sleep, retriever_tool] #genImage]
-    tools = [audio, med_script] #genImage]
+    tools = [audio, med_script,kbase_tool] #genImage]
     #Step 4: create RunnablePassthrough for format_to_openai_functions([(result1, observation)])
     functions = [convert_to_openai_function(f) for f in tools]
-    model = ChatOpenAI(temperature=0, streaming=True).bind(functions=functions)
-
+    model = ChatOpenAI(model='gpt-4o-2024-05-13',temperature=0, streaming=True).bind(functions=functions)#, tool_choice="auto")
     agent_chain = RunnablePassthrough.assign(
         agent_scratchpad= lambda x: format_to_openai_functions(x["intermediate_steps"])
     ) | ai_prompt | model | OpenAIFunctionsAgentOutputParser()
-    agent_executor = AgentExecutor(agent=agent_chain, tools=tools, verbose=True, memory=memory)
+    agent_executor = AgentExecutor(agent=agent_chain, tools=tools, verbose=True, memory=memory, handle_parsing_errors=True)
     response= agent_executor.invoke({"input": human_input})['output']
  
-    return response #agent_executor.invoke({"input": human_input})['output']
+    return response 
 

@@ -1,6 +1,6 @@
 # INSIGHT
 
-**INSIGHT** is an AI-powered wellness coach that offers comprehensive guidance on personal growth and wellness through a unique, multi-part response structure. It provides deep and meaningful advice inspired by a variety of philosophical and psychological sources. User queries as well as INSIGHT's response can be in text or audio form. Each user query is addressed in three specific sections:
+**INSIGHT** is an AI-powered wellness coach that offers comprehensive guidance on personal growth and wellness through a unique, multi-part response structure. It provides deep and meaningful advice inspired by a variety of philosophical and psychological sources. User queries, as well as INSIGHT's response, can be in text or audio form. Each user query is addressed in three specific sections:
 
 **Wisdom:** This section offers philosophical and motivational insights, designed to provoke thought and encourage deep reflection.
 

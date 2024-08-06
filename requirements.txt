@@ -1,7 +1,10 @@
 langchain
 langchain_openai
+langchain_community
 openai
 python-dotenv
 streamlit
 streamlit_mic_recorder
 watchdog
+PyPDF2 
+faiss-cpu
