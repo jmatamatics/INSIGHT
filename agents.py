@@ -23,6 +23,7 @@ from openai import OpenAI
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
+
 import streamlit as st
 
 
@@ -127,7 +128,7 @@ response = client.chat.completions.create(
     {"role": "user",
          "content":[
          {"type": "text", "text" :"decribe the emotion of the person in the picturd"},
-         {"type": "image_url", "image_url": "url": ""  }
+         {"type": "image_url", "image_url": "url": "  "  }
          ]
     }
   ],
