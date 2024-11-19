@@ -126,8 +126,8 @@ response = client.chat.completions.create(
     {"role": "system", "content": "You are a helpful assistant."},
     {"role": "user",
          "content":[
-         {"tyoe": "text", "text" :"decribe the emotion of the person in the picturd"},
-         {"tyoe": "imag_url", "image_url": "url":   }
+         {"type": "text", "text" :"decribe the emotion of the person in the picturd"},
+         {"type": "image_url", "image_url": "url": ""  }
          ]
     }
   ],
