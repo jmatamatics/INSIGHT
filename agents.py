@@ -121,23 +121,6 @@ def audio(ai_input):
 
 
 
-response = client.chat.completions.create(
-  model="gpt-4o",
-  messages=[
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user",
-         "content":[
-         {"type": "text", "text" :"decribe the emotion of the person in the picturd"},
-         {"type": "image_url", "image_url": "url" }
-         ]
-    }
-  ],
-  max_token=300
-)
-
-
-
-
 
 
 
