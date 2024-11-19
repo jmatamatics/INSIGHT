@@ -128,7 +128,7 @@ response = client.chat.completions.create(
     {"role": "user",
          "content":[
          {"type": "text", "text" :"decribe the emotion of the person in the picturd"},
-         {"type": "image_url", "image_url": "url": "  "  }
+         {"type": "image_url", "image_url": "url" }
          ]
     }
   ],
