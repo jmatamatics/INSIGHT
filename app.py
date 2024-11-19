@@ -25,8 +25,6 @@ st.subheader('AI Wellness Coach for Philosophical and Practical Guidance')
 
 
 
-
-
 def stream_data():
     words = response.split()  # Split the response into words
     last_index = len(words) - 1  # Index of the last word
